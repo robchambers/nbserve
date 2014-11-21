@@ -2,16 +2,16 @@
 
 """
 1) Convert a notebook --> HTML, write it out, confirm.
-2) Do it w/out runipy
-3) Do it as a URL.
-2)
+2) Do it as a URL.
+
 """
 
 from runipy.notebook_runner import NotebookRunner
 from IPython.nbconvert.exporters.html import HTMLExporter
 from IPython.nbformat.current import read
 
-def print_nb(nbpath):
+
+def render_nb(nbpath):
 
     notebook = read(open(nbpath), 'json')
     r = NotebookRunner(notebook)
@@ -27,7 +27,7 @@ def print_nb(nbpath):
     output, resources = exporter.from_notebook_node(r.nb)
     with open('out.html', 'w') as f:
         f.write(output)
-    print "Wrote Notebook."
+    return output
 
 
 if __name__ == "__main__":
@@ -36,4 +36,4 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="nb2web")
     parser.add_argument('nbpath')
     args = parser.parse_args()
-    print_nb(args.nbpath)
+    print render_nb(args.nbpath)
