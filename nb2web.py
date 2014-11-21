@@ -8,7 +8,8 @@
 
 from runipy.notebook_runner import NotebookRunner
 from IPython.nbconvert.exporters.html import HTMLExporter
-from IPython.nbformat.current import read
+from IPython.nbformat.current import read, write
+
 
 
 def render_nb(nbpath):
@@ -17,16 +18,11 @@ def render_nb(nbpath):
     r = NotebookRunner(notebook)
     r.run_notebook()
 
-    exporter = HTMLExporter()
-    from IPython.nbformat.current import write
-    write(r.nb, open("MyOtherNotebook.ipynb", 'w'), 'json')
     exporter = HTMLExporter(
         #config=Config({'HTMLExporter':{'default_template':args.template}})
-        )
+    )
 
     output, resources = exporter.from_notebook_node(r.nb)
-    with open('out.html', 'w') as f:
-        f.write(output)
     return output
 
 
