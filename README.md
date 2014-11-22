@@ -1,12 +1,48 @@
 
 # note2web
 
-## To Do
+## Usage
 
-* restructure directories, use nbserve name.
-* working setup.py
+1) Checkout the Git repo.
+2) Set up:
+
+   ```sh
+   $ python setup.py develop
+   # or
+   $ python setup.py install
+   ```
+
+3) Run it:
+
+   ```
+   $ nbserve -h
+
+       usage: nbserve [-h] [-v] [-p PORT] [--no-debug] [working_directory]
+
+       nbserve is a simple script that lets you serve iPython notebooks as read-only
+       HTML files over the web. It has some default options that make the notebooks
+       appropriate for generating reports, such as hiding input cells.
+
+       positional arguments:
+         working_directory
+
+       optional arguments:
+         -h, --help         show this help message and exit
+         -v, --version      show program's version number and exit
+         -p PORT
+         --no-debug
+
+   $ nbserve
+
+       Ctrl-C to stop server.
+        * Running on http://127.0.0.1:5000/
+        * Restarting with reloader
+       Ctrl-C to stop server.
+   ```
+
+
+## To Do
 * basic unit tests
-* very simple CLI
 * move to github
 * CLI option to remove input cells (default true?)
 * CLI option to cache / not cache
@@ -14,7 +50,7 @@
 * Python3 support
 
 ## Wish List
-
+* Test on TravisCI, etc.
 
 ## Use Cases
 
