@@ -1,6 +1,21 @@
 
 # note2web
 
+## To Do
+
+* restructure directories, use nbserve name.
+* working setup.py
+* basic unit tests
+* very simple CLI
+* move to github
+* CLI option to remove input cells (default true?)
+* CLI option to cache / not cache
+* Ability to force run from cached
+* Python3 support
+
+## Wish List
+
+
 ## Use Cases
 
 * A user has run analyses in iPython Notebook and wants to easily make the

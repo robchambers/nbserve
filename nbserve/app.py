@@ -1,14 +1,23 @@
 import flask
-from nbserve import render_nb
-app = flask.Flask(__name__)
-app.config['DEBUG'] = True
+import nbserve
+import os
+
+
+flask_app = flask.Flask(nbserve.__progname__)
+
+flask_app.config['DEBUG'] = True
 
 from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
 
 
 nbmanager = FileNotebookManager(notebook_dir='.')
 
-@app.route('/')
+def set_working_directory(path):
+    if not nbmanager.path_exists(path):
+        raise IOError('Path not found: %s' % os.path.abspath(path))
+    nbmanager.notebook_dir = path
+
+@flask_app.route('/')
 def render_index():
     template = """<html>
     <body>
@@ -22,11 +31,10 @@ def render_index():
     </html>"""
     return flask.render_template_string(template, notebooks=nbmanager.list_notebooks('.'))
 
-@app.route('/<nbname>/')
+@flask_app.route('/<nbname>/')
 def render_page(nbname):
     from runipy.notebook_runner import NotebookRunner
     from IPython.nbconvert.exporters.html import HTMLExporter
-    from IPython.nbformat.current import to_notebook_json
 
     if not nbmanager.notebook_exists(nbname):
         print "Notebook %s does not exist." % nbname
@@ -47,4 +55,4 @@ def render_page(nbname):
     return output
 
 if __name__ == "__main__":
-    app.run()
+    flask_app.run()
