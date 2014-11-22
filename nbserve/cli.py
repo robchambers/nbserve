@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
-CLI
+Command Line Interface.
 """
+
 import nbserve
+import argparse
 
 def main():
-    import argparse
-
     parser = argparse.ArgumentParser(
         prog=nbserve.__progname__,
         description=nbserve.__description__,
@@ -18,11 +18,13 @@ def main():
 
     args = parser.parse_args()
 
-    print "Ctrl-C to stop server."
-    nbserve.set_working_directory(args.working_directory)
-    nbserve.flask_app.run(debug=args.debug, port=args.port)
 
-    print "Exiting."
+    nbserve.set_working_directory(args.working_directory)
+
+    print "Running. For usage info and options, type %s -h." % nbserve.__progname__
+    print "Press Ctrl-C or similar to stop."
+
+    nbserve.flask_app.run(debug=args.debug, port=args.port)
 
 if __name__ == "__main__":
     main()
