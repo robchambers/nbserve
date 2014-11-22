@@ -1,5 +1,21 @@
+# nbserve
 
-# note2web
+`nbserve` is a simple script that lets you serve
+iPython notebooks as read-only HTML files over the web.
+
+One of the key differences between nbserve and other options
+(like nbviewer) is that it lets you *run* the files as
+they're being served, allowing you to create dynamic,
+always-up-to-date 'reports'.
+
+As nbserve matures, I hope to add features like:
+
+* Stripping of input cells.
+* Caching, with some simple defaults and features to minimize
+  the amount of configuration required.
+* Convenient/appropriate output templates.
+* Password protection
+* An example of how to deploy to Heroku or similar.
 
 ## Usage
 
@@ -41,28 +57,17 @@
    ```
 
 
-## To Do
-* basic unit tests
-* move to github
-* CLI option to remove input cells (default true?)
-* CLI option to cache / not cache
-* Ability to force run from cached
-* Python3 support
-
-## Wish List
-* Test on TravisCI, etc.
-
-## Use Cases
+## Target Use Cases
 
 * A user has run analyses in iPython Notebook and wants to easily make the
-  results available on the web. The results are alreay contained
+  results available on the web. The results are already contained
   in the notebook
 
 * A user has analyses that need to be run regularly or on-demand, and
   the served notebooks are a way to easily generate that dynamic content.
 
 * A user develops notebooks with extensive code, and needs a way to make
-  them accessible to people who will be turned off by the code.
+  them accessible to people who will be scared away or distracted by the code.
 
 ## Links / Inspiration
 
@@ -78,8 +83,8 @@
 * You install it with pip.
 * You can run it three ways:
 
-  * gunicorn note2web:uwsgi_app
-  * note2web serve ... options ...
+  * gunicorn nbserve:flask_app
+  * nbserve
   * add it as a uswgi container to nginx, apache, etc, just like
     any other flask app.
 
