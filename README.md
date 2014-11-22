@@ -88,6 +88,13 @@ As nbserve matures, I hope to add features like:
   * add it as a uswgi container to nginx, apache, etc, just like
     any other flask app.
 
+## Development
+### Releasing
+```sh
+# python setup.py register -r pypi
+python setup.py sdist upload -r pypi
+```
+
 ## Build Status
 * Master: [![Build Status](https://travis-ci.org/robchambers/nbserve.svg?branch=master)](https://travis-ci.org/robchambers/nbserve)
 * Develop: [![Build Status](https://travis-ci.org/robchambers/nbserve.svg?branch=develop)](https://travis-ci.org/robchambers/nbserve)
