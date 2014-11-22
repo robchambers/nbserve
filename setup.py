@@ -3,8 +3,9 @@ from setuptools import setup, find_packages
 # Get __version__
 exec(open('nbserve/meta.py').read())
 
-
-
+requires = ['flask',
+            'runipy',
+            'ipython']
 setup(
     name=__progname__,
     version=__version__,
@@ -12,7 +13,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=['Flask'],
+    install_requires=requires,
     entry_points = {
         'console_scripts': ['nbserve=nbserve.cli:main']
         }
