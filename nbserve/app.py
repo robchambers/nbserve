@@ -41,7 +41,8 @@ def render_page(nbname):
         flask.abort(404)
 
     print "Loading notebook %s" % nbname
-    nb  = nbmanager.get_notebook(nbname)
+    nbmanager.trust_notebook(nbname)
+    nb = nbmanager.get_notebook(nbname)
     print "Making runner..."
     runner = NotebookRunner(nb['content'])
     print "Running notebook"
