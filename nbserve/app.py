@@ -13,7 +13,7 @@ from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
 nbmanager = FileNotebookManager(notebook_dir='.')
 
 def set_working_directory(path):
-    if not nbmanager.path_exists(path):
+    if not os.path.exists(path):
         raise IOError('Path not found: %s' % os.path.abspath(path))
     nbmanager.notebook_dir = path
 
