@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-# Get __version__
+# Get  __version__
 exec(open('nbserve/meta.py').read())
 
 requires = ['flask',
