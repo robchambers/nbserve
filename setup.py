@@ -5,7 +5,7 @@ exec(open('nbserve/meta.py').read())
 
 requires = ['flask',
             'runipy',
-            'ipython',
+            'ipython[notebook]',
             'tornado']
 setup(
     name=__progname__,
