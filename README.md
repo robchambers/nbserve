@@ -89,7 +89,7 @@ As nbserve matures, I hope to add features like:
     any other flask app.
 
 ## Build Status
-* Master: * Develop: [![Build Status](https://travis-ci.org/robchambers/nbserve.svg?branch=master)](https://travis-ci.org/robchambers/nbserve)
+* Master: [![Build Status](https://travis-ci.org/robchambers/nbserve.svg?branch=master)](https://travis-ci.org/robchambers/nbserve)
 * Develop: [![Build Status](https://travis-ci.org/robchambers/nbserve.svg?branch=develop)](https://travis-ci.org/robchambers/nbserve)
 
  
