@@ -19,13 +19,11 @@ As nbserve matures, I hope to add features like:
 
 ## Usage
 
-1) Checkout the Git repo.
-2) Set up:
+1) Install:
 
    ```sh
-   $ python setup.py develop
-   # or
-   $ python setup.py install
+   pip install nbserve
+   # Or, check out the git repo and setup.py develop
    ```
 
 3) Run it:
