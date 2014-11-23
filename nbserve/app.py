@@ -19,7 +19,8 @@ def set_working_directory(path):
 
 @flask_app.route('/')
 def render_index():
-    template = """<html>
+    from jinja2 import Template
+    template = Template("""<html>
     <body>
     <h2>Notebooks</h2>
     <ul>
@@ -28,8 +29,14 @@ def render_index():
         {% endfor %}
     </ul>
     </body>
-    </html>"""
-    return flask.render_template_string(template, notebooks=nbmanager.list_notebooks('.'))
+    </html>""")
+    def notebooks():
+        for nb in nbmanager.list_notebooks('.'):
+            import time
+            time.sleep(1)
+            print str(nb)
+            yield nb
+    return flask.Response(template.stream(notebooks=notebooks()))
 
 @flask_app.route('/<nbname>/')
 def render_page(nbname):
