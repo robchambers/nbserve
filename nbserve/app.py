@@ -43,10 +43,24 @@ def render_page(nbname):
     print "Loading notebook %s" % nbname
     nbmanager.trust_notebook(nbname)
     nb = nbmanager.get_notebook(nbname)
-    print "Making runner..."
-    runner = NotebookRunner(nb['content'])
-    print "Running notebook"
-    runner.run_notebook()
+    print "Making runner..."''
+
+    # This is an ugly little bit to deal with a sporadic
+    #  'queue empty' bug in iPython that only seems to
+    #  happen on the integration servers...
+    #  see https://github.com/paulgb/runipy/issues/36
+    N_RUN_RETRIES = 4
+    from Queue import Empty
+    for i in range(N_RUN_RETRIES):
+        try:
+            runner = NotebookRunner(nb['content'])
+            print "Running notebook"
+            runner.run_notebook()
+            break
+        except Empty as e:
+            if i >= (N_RUN_RETRIES - 1):
+                raise
+
     print "Exporting notebook"
     exporter = HTMLExporter(
         #config=Config({'HTMLExporter':{'default_template':args.template}})
