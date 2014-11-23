@@ -4,12 +4,25 @@ import os
 
 
 flask_app = flask.Flask(nbserve.__progname__)
-
 flask_app.config['DEBUG'] = True
 
+#############
+# Initialize some IPython and RunIPy services.
 from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
-
 nbmanager = FileNotebookManager(notebook_dir='.')
+##
+# This thread initializes a notebook runner, so that it's
+# ready to go on first page access.
+runner = None
+import threading
+def make_notebook_runner():
+    global runner
+    from runipy.notebook_runner import NotebookRunner
+    runner = NotebookRunner(None)
+    print "Runner is ready."
+make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
+make_notebook_runner_thread.start()
+
 
 def set_working_directory(path):
     if not os.path.exists(path):
@@ -30,24 +43,9 @@ def render_index():
     </html>"""
     return flask.render_template_string(template, notebooks=nbmanager.list_notebooks('.'))
 
-
-##
-# This thread initializes a notebook runner, so that it's
-# ready to go on first page access.
-runner = None
-import threading
-def make_notebook_runner():
-    global runner
-    from runipy.notebook_runner import NotebookRunner
-    runner = NotebookRunner(None)
-    print "Runner is ready."
-make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
-make_notebook_runner_thread.start()
-
 @flask_app.route('/<nbname>/')
 def render_page(nbname):
     global runner
-
     from IPython.nbconvert.exporters.html import HTMLExporter
 
     if not nbmanager.notebook_exists(nbname):
