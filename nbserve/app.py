@@ -9,7 +9,6 @@ flask_app.config['DEBUG'] = True
 
 from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
 
-
 nbmanager = FileNotebookManager(notebook_dir='.')
 
 def set_working_directory(path):
@@ -31,8 +30,12 @@ def render_index():
     </html>"""
     return flask.render_template_string(template, notebooks=nbmanager.list_notebooks('.'))
 
+
+runner = None
+
 @flask_app.route('/<nbname>/')
 def render_page(nbname):
+    global runner
     from runipy.notebook_runner import NotebookRunner
     from IPython.nbconvert.exporters.html import HTMLExporter
 
@@ -51,11 +54,24 @@ def render_page(nbname):
     #  see https://github.com/paulgb/runipy/issues/36
     N_RUN_RETRIES = 4
     from Queue import Empty
+
     for i in range(N_RUN_RETRIES):
         try:
-            runner = NotebookRunner(nb['content'])
+            if runner is None:
+                runner = NotebookRunner(nb['content'])
+            else:
+                # Do as complete of a reset of the kernel as we can.
+                # Unfortunately, this doesn't really do a 'hard' reset
+                # of any modules...
+                class ResetCell(dict):
+                    """Simulates just enough of a notebook cell to get this
+                    '%reset -f' cell executed using the existing runipy
+                     machinery."""
+                    input = "%reset -f"
+                runner.run_cell(ResetCell())# shell.execute("%reset -f")#ResetCell())
+                runner.nb = nb['content']
             print "Running notebook"
-            runner.run_notebook()
+            runner.run_notebook(skip_exceptions=True)
             break
         except Empty as e:
             if i >= (N_RUN_RETRIES - 1):
