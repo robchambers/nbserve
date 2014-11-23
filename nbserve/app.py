@@ -1,6 +1,8 @@
 import flask
 import nbserve
 import os
+from runipy.notebook_runner import NotebookRunner
+from IPython.nbconvert.exporters.html import HTMLExporter
 
 
 flask_app = flask.Flask(nbserve.__progname__)
@@ -11,6 +13,8 @@ from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
 
 
 nbmanager = FileNotebookManager(notebook_dir='.')
+
+runner = None
 
 def set_working_directory(path):
     if not os.path.exists(path):
@@ -33,8 +37,7 @@ def render_index():
 
 @flask_app.route('/<nbname>/')
 def render_page(nbname):
-    from runipy.notebook_runner import NotebookRunner
-    from IPython.nbconvert.exporters.html import HTMLExporter
+    global runner
 
     if not nbmanager.notebook_exists(nbname):
         print "Notebook %s does not exist." % nbname
@@ -43,7 +46,7 @@ def render_page(nbname):
     print "Loading notebook %s" % nbname
     nbmanager.trust_notebook(nbname)
     nb = nbmanager.get_notebook(nbname)
-    print "Making runner..."''
+
 
     # This is an ugly little bit to deal with a sporadic
     #  'queue empty' bug in iPython that only seems to
@@ -51,11 +54,22 @@ def render_page(nbname):
     #  see https://github.com/paulgb/runipy/issues/36
     N_RUN_RETRIES = 4
     from Queue import Empty
+    class ResetCell(dict):
+        input='%reset'
     for i in range(N_RUN_RETRIES):
         try:
-            runner = NotebookRunner(nb['content'])
+            print i
+            if runner is None:
+                print "Creating runner."
+                runner = NotebookRunner(nb['content'])
+                print "Runner created."
+            else:
+                print "Resetting runner."
+                runner.run_cell(ResetCell())
+                print "Reset."
             print "Running notebook"
             runner.run_notebook()
+            print "Ran."
             break
         except Empty as e:
             if i >= (N_RUN_RETRIES - 1):
