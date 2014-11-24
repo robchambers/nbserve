@@ -4,13 +4,25 @@ import os
 
 
 flask_app = flask.Flask(nbserve.__progname__)
-
 flask_app.config['DEBUG'] = True
 
+#############
+# Initialize some IPython and RunIPy services.
 from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
-
-
 nbmanager = FileNotebookManager(notebook_dir='.')
+##
+# This thread initializes a notebook runner, so that it's
+# ready to go on first page access.
+runner = None
+import threading
+def make_notebook_runner():
+    global runner
+    from runipy.notebook_runner import NotebookRunner
+    runner = NotebookRunner(None)
+    print "Runner is ready."
+make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
+make_notebook_runner_thread.start()
+
 
 def set_working_directory(path):
     if not os.path.exists(path):
@@ -33,7 +45,7 @@ def render_index():
 
 @flask_app.route('/<nbname>/')
 def render_page(nbname):
-    from runipy.notebook_runner import NotebookRunner
+    global runner
     from IPython.nbconvert.exporters.html import HTMLExporter
 
     if not nbmanager.notebook_exists(nbname):
@@ -51,13 +63,27 @@ def render_page(nbname):
     #  see https://github.com/paulgb/runipy/issues/36
     N_RUN_RETRIES = 4
     from Queue import Empty
+
     for i in range(N_RUN_RETRIES):
         try:
-            runner = NotebookRunner(nb['content'])
+            if runner is None:
+                make_notebook_runner_thread.join()
+
+            # Do as complete of a reset of the kernel as we can.
+            # Unfortunately, this doesn't really do a 'hard' reset
+            # of any modules...
+            class ResetCell(dict):
+                """Simulates just enough of a notebook cell to get this
+                '%reset -f' cell executed using the existing runipy
+                 machinery."""
+                input = "%reset -f"
+            runner.run_cell(ResetCell())
+            runner.nb = nb['content']
             print "Running notebook"
-            runner.run_notebook()
+            runner.run_notebook(skip_exceptions=True)
             break
         except Empty as e:
+            print "WARNING: Empty bug happened."
             if i >= (N_RUN_RETRIES - 1):
                 raise
 
