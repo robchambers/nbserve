@@ -88,22 +88,44 @@ def render_page(nbname):
                 raise
 
     print "Exporting notebook"
-    from IPython.config import Config
+    import jinja2
+    template = jinja2.Template("""{%- extends 'full.tpl' -%}
+
+{% block input_group -%}
+{% endblock input_group %}
+
+{% block in_prompt -%}
+{%- endblock in_prompt %}
+
+{% block empty_in_prompt -%}
+{%- endblock empty_in_prompt %}
+
+{% block output %}
+{{ super.super() }}
+{% endblock output %}""")
+    #templateLoader = jinja2.FileSystemLoader( searchpath="/" )
+    #templateEnv = jinja2.Environment( loader=templateLoader )
+
+    #TEMPLATE_FILE = "/home/user/site/example2.jinja"
+    #template = templateEnv.get_template( TEMPLATE_FILE )
+
+    #from IPython.config import Config
     exporter = HTMLExporter(
         #config=Config({'HTMLExporter':{'default_template':args.template}})
         #config=Config({'HTMLExporter':{'default_template':'nbserve'}})
-        #template='nbserve'
+
     )
-    exporter.environment.loader.loaders[0].searchpath += [os.path.join(os.path.split(__file__)[0],'templates')]
-    exporter.template_file = 'nbserve.tpl'
-    from clearinputpreprocessor import ClearInputPreprocessor
-    clear_input_preprocessor = ClearInputPreprocessor()
-    clear_input_preprocessor.enabled = True
-    output, resources = runner.nb, None
+    exporter.template = template
+    #exporter.environment.loader.loaders[0].searchpath += [os.path.join(os.path.split(__file__)[0],'templates')]
+    #exporter.template_file = 'nbserve.tpl'
+    #from clearinputpreprocessor import ClearInputPreprocessor
+    #clear_input_preprocessor = ClearInputPreprocessor()
+    #clear_input_preprocessor.enabled = True
+    #output, resources = runner.nb, None
     #output, resources = clear_input_preprocessor(output, resources)
     output, resources = exporter.from_notebook_node(runner.nb)
     print "Returning."
-    resources['metadata']['name'] = 'Test title.'
+    #resources['metadata']['name'] = 'Test title.'
     return output
 
 if __name__ == "__main__":
