@@ -22,6 +22,14 @@ class NBServeTestCase(unittest.TestCase):
         response = self.app.get('/mocknb1.ipynb/')
         self.assertEqual(response.status_code, 200)
         self.assertIn('# This is a comment in the first input cell.', response.data)
+        self.assertIn('In&nbsp;[', response.data)
+        self.assertIn('<div class="prompt input_prompt">', response.data)
+
+    def test_mocknb1_has_no_input_code_cells(self):
+        response = self.app.get('/mocknb1.ipynb/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('# This is a comment in the first input cell.', response.data)
+        self.assertNotIn('<div class="prompt input_prompt">', response.data)
 
     def test_mocknb1_has_output_cells(self):
         response = self.app.get('/mocknb1.ipynb/')

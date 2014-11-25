@@ -87,7 +87,9 @@ As nbserve matures, I hope to add features like:
     any other flask app.
 
 ## Development
+
 ### Releasing
+
 ```sh
 # python setup.py register -r pypi
 python setup.py sdist upload -r pypi

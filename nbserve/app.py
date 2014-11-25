@@ -91,8 +91,14 @@ def render_page(nbname):
     exporter = HTMLExporter(
         #config=Config({'HTMLExporter':{'default_template':args.template}})
     )
+    from clearinputpreprocessor import ClearInputPreprocessor
+    clear_input_preprocessor = ClearInputPreprocessor()
+    clear_input_preprocessor.enabled = True
+    output, resources = runner.nb, None
+    output, resources = clear_input_preprocessor(output, resources)
     output, resources = exporter.from_notebook_node(runner.nb)
     print "Returning."
+    resources['metadata']['name'] = 'Test title.'
     return output
 
 if __name__ == "__main__":
