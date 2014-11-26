@@ -46,7 +46,8 @@ def render_index():
 @flask_app.route('/<nbname>/')
 def render_page(nbname):
     global runner
-    from IPython.nbconvert.exporters.html import HTMLExporter
+    #from IPython.nbconvert.exporters.html import HTMLExporter
+    from nbexporter import NBExporter
 
     if not nbmanager.notebook_exists(nbname):
         print "Notebook %s does not exist." % nbname
@@ -89,20 +90,8 @@ def render_page(nbname):
 
     print "Exporting notebook"
     import jinja2
-    template = jinja2.Template("""{%- extends 'full.tpl' -%}
-
-{% block input_group -%}
-{% endblock input_group %}
-
-{% block in_prompt -%}
-{%- endblock in_prompt %}
-
-{% block empty_in_prompt -%}
-{%- endblock empty_in_prompt %}
-
-{% block output %}
-{{ super.super() }}
-{% endblock output %}""")
+    #with open(os.path.join(os.path.split(__file__)[0],'templates/nbserve.tpl')) as f:
+    #    template = jinja2.Template(f.read()
     #templateLoader = jinja2.FileSystemLoader( searchpath="/" )
     #templateEnv = jinja2.Environment( loader=templateLoader )
 
@@ -110,12 +99,12 @@ def render_page(nbname):
     #template = templateEnv.get_template( TEMPLATE_FILE )
 
     #from IPython.config import Config
-    exporter = HTMLExporter(
+    exporter = NBExporter(
         #config=Config({'HTMLExporter':{'default_template':args.template}})
         #config=Config({'HTMLExporter':{'default_template':'nbserve'}})
-
+        template_file='collapse'
     )
-    exporter.template = template
+    # exporter.template = template
     #exporter.environment.loader.loaders[0].searchpath += [os.path.join(os.path.split(__file__)[0],'templates')]
     #exporter.template_file = 'nbserve.tpl'
     #from clearinputpreprocessor import ClearInputPreprocessor
