@@ -88,32 +88,11 @@ def render_page(nbname):
                 raise
 
     print "Exporting notebook"
-    import jinja2
-    #with open(os.path.join(os.path.split(__file__)[0],'templates/nbserve.tpl')) as f:
-    #    template = jinja2.Template(f.read()
-    #templateLoader = jinja2.FileSystemLoader( searchpath="/" )
-    #templateEnv = jinja2.Environment( loader=templateLoader )
 
-    #TEMPLATE_FILE = "/home/user/site/example2.jinja"
-    #template = templateEnv.get_template( TEMPLATE_FILE )
+    exporter = NBExporter(template_file='collapsed')
 
-    #from IPython.config import Config
-    exporter = NBExporter(
-        #config=Config({'HTMLExporter':{'default_template':args.template}})
-        #config=Config({'HTMLExporter':{'default_template':'nbserve'}})
-        template_file='collapsed'
-    )
-    # exporter.template = template
-    #exporter.environment.loader.loaders[0].searchpath += [os.path.join(os.path.split(__file__)[0],'templates')]
-    #exporter.template_file = 'nbserve.tpl'
-    #from clearinputpreprocessor import ClearInputPreprocessor
-    #clear_input_preprocessor = ClearInputPreprocessor()
-    #clear_input_preprocessor.enabled = True
-    #output, resources = runner.nb, None
-    #output, resources = clear_input_preprocessor(output, resources)
     output, resources = exporter.from_notebook_node(runner.nb)
     print "Returning."
-    #resources['metadata']['name'] = 'Test title.'
     return output
 
 if __name__ == "__main__":

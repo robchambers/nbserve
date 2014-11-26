@@ -2,7 +2,6 @@
 """
 Command Line Interface.
 """
-
 import nbserve
 import argparse
 
