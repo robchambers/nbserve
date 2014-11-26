@@ -2,7 +2,6 @@ import flask
 import nbserve
 import os
 
-
 flask_app = flask.Flask(nbserve.__progname__)
 flask_app.config['DEBUG'] = True
 
@@ -54,7 +53,7 @@ def render_page(nbname):
         flask.abort(404)
 
     print "Loading notebook %s" % nbname
-    nbmanager.trust_notebook(nbname)
+    #nbmanager.trust_notebook(nbname)
     nb = nbmanager.get_notebook(nbname)
     print "Making runner..."''
 
@@ -75,9 +74,9 @@ def render_page(nbname):
             # of any modules...
             class ResetCell(dict):
                 """Simulates just enough of a notebook cell to get this
-                '%reset -f' cell executed using the existing runipy
+                'reset cell' executed using the existing runipy
                  machinery."""
-                input = "%reset -f"
+                input = "get_ipython().reset(new_session=True)"
             runner.run_cell(ResetCell())
             runner.nb = nb['content']
             print "Running notebook"
@@ -102,7 +101,7 @@ def render_page(nbname):
     exporter = NBExporter(
         #config=Config({'HTMLExporter':{'default_template':args.template}})
         #config=Config({'HTMLExporter':{'default_template':'nbserve'}})
-        template_file='collapse'
+        template_file='collapsed'
     )
     # exporter.template = template
     #exporter.environment.loader.loaders[0].searchpath += [os.path.join(os.path.split(__file__)[0],'templates')]
