@@ -26,6 +26,7 @@ class NBServeTestCase(unittest.TestCase):
         self.assertIn('<div class="prompt input_prompt">', response.data)
 
     def test_mocknb1_has_no_input_code_cells(self):
+        nbserve.update_config({'input_cells':'strip'})
         response = self.app.get('/mocknb1.ipynb/')
         self.assertEqual(response.status_code, 200)
         self.assertNotIn('# This is a comment in the first input cell.', response.data)
@@ -85,8 +86,7 @@ class NBServeTestCase(unittest.TestCase):
     # Does the CLI work right?
 
     def setUp(self):
-        nbserve.set_working_directory(
-            os.path.join(os.path.split(__file__)[0],'notebooks/'))
+        nbserve.set_config({'working_directory':os.path.join(os.path.split(__file__)[0],'notebooks/')})
         self.app = nbserve.flask_app.test_client()
 
     def tearDown(self):

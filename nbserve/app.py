@@ -22,11 +22,24 @@ def make_notebook_runner():
 make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
 make_notebook_runner_thread.start()
 
+def update_config(new_config):
+    flask_app.base_config.update(new_config)
 
-def set_working_directory(path):
-    if not os.path.exists(path):
-        raise IOError('Path not found: %s' % os.path.abspath(path))
-    nbmanager.notebook_dir = path
+    # Check for changed working directory.
+    if new_config.has_key('working_directory'):
+        wd = os.path.abspath(new_config['working_directory'])
+        if nbmanager.notebook_dir != wd:
+            if not os.path.exists(wd):
+                raise IOError('Path not found: %s' % wd)
+            nbmanager.notebook_dir = wd
+
+
+def set_config(new_config):
+    flask_app.base_config = dict(working_directory='.',
+                                 input_cells='collapse')
+    update_config(new_config)
+
+set_config({})
 
 @flask_app.route('/')
 def render_index():
@@ -43,7 +56,8 @@ def render_index():
     return flask.render_template_string(template, notebooks=nbmanager.list_notebooks('.'))
 
 @flask_app.route('/<nbname>/')
-def render_page(nbname):
+def render_page(nbname, config={}):
+    config = dict(flask_app.base_config, **config)
     global runner
     #from IPython.nbconvert.exporters.html import HTMLExporter
     from nbexporter import NBExporter
@@ -88,8 +102,8 @@ def render_page(nbname):
                 raise
 
     print "Exporting notebook"
-
-    exporter = NBExporter(template_file='collapsed')
+    template_file = dict(strip='strip',collapse='collapse',show='full')[config['input_cells']]
+    exporter = NBExporter(template_file=template_file)
 
     output, resources = exporter.from_notebook_node(runner.nb)
     print "Returning."
