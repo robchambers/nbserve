@@ -19,6 +19,7 @@ class NBServeTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_mocknb1_has_input_code_cells(self):
+        nbserve.update_config({'input_cells':'show'})
         response = self.app.get('/mocknb1.ipynb/')
         self.assertEqual(response.status_code, 200)
         self.assertIn('# This is a comment in the first input cell.', response.data)

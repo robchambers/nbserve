@@ -23,7 +23,7 @@ def main():
     print "Running. For usage info and options, type %s -h." % nbserve.__progname__
     print "Press Ctrl-C or similar to stop."
 
-    nbserve.update_config(args)
+    nbserve.set_config(args.__dict__)
     nbserve.flask_app.run(debug=args.debug, port=args.port)
 
 if __name__ == "__main__":
