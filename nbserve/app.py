@@ -3,7 +3,7 @@ import nbserve
 import os
 
 flask_app = flask.Flask(nbserve.__progname__)
-flask_app.config['DEBUG'] = True
+#flask_app.config['DEBUG'] = True
 
 #############
 # Initialize some IPython and RunIPy services.
@@ -23,6 +23,8 @@ make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
 make_notebook_runner_thread.start()
 
 def update_config(new_config):
+    """ Update config options with the provided dictionary of options.
+    """
     flask_app.base_config.update(new_config)
 
     # Check for changed working directory.
@@ -34,12 +36,17 @@ def update_config(new_config):
             nbmanager.notebook_dir = wd
 
 
-def set_config(new_config):
+def set_config(new_config={}):
+    """ Reset config options to defaults, and then update (optionally)
+    with the provided dictionary of options. """
+    # The default base configuration.
     flask_app.base_config = dict(working_directory='.',
-                                 input_cells='collapse')
+                                 template='collapse-input',
+                                 debug=False,
+                                 port=None)
     update_config(new_config)
 
-set_config({})
+set_config()
 
 @flask_app.route('/')
 def render_index():
@@ -57,7 +64,10 @@ def render_index():
 
 @flask_app.route('/<nbname>/')
 def render_page(nbname, config={}):
+
+    # Combine base config with any provided overrides.
     config = dict(flask_app.base_config, **config)
+
     global runner
     #from IPython.nbconvert.exporters.html import HTMLExporter
     from nbexporter import NBExporter
@@ -102,8 +112,7 @@ def render_page(nbname, config={}):
                 raise
 
     print "Exporting notebook"
-    template_file = dict(strip='strip',collapse='collapse',show='full')[config['input_cells']]
-    exporter = NBExporter(template_file=template_file)
+    exporter = NBExporter(template_file=config['template'])
 
     output, resources = exporter.from_notebook_node(runner.nb)
     print "Returning."
