@@ -38,6 +38,13 @@ class NBServeTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('This is an output cell.', response.data)
 
+    def test_mocknb1_has_no_output_cells_if_not_run(self):
+        nbserve.update_config({'run':False})
+        response = self.app.get('/mocknb1.ipynb/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('This is an output cell.', response.data)
+
+
     def test_mocknb1_has_printed_output(self):
         response = self.app.get('/mocknb1.ipynb/')
         self.assertEqual(response.status_code, 200)

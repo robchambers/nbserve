@@ -17,7 +17,7 @@ def config_from_args(args=None):
     parser.add_argument("-p", dest="port", action="store", default=None, type=int)
     parser.add_argument("-r", dest="run", action="store_true",
                         help="Whether to run scripts each time they're loaded.")
-    parser.add_argument("-d", dest="debug", action="store_true", default=False)
+    parser.add_argument("-d", dest="debug", help="Debug mode", action="store_true", default=False)
 
 
     config = parser.parse_args(args)

@@ -79,42 +79,45 @@ def render_page(nbname, config={}):
     print "Loading notebook %s" % nbname
     #nbmanager.trust_notebook(nbname)
     nb = nbmanager.get_notebook(nbname)
-    print "Making runner..."''
 
-    # This is an ugly little bit to deal with a sporadic
-    #  'queue empty' bug in iPython that only seems to
-    #  happen on the integration servers...
-    #  see https://github.com/paulgb/runipy/issues/36
-    N_RUN_RETRIES = 4
-    from Queue import Empty
+    if config['run']:
+        print "Making runner..."''
 
-    for i in range(N_RUN_RETRIES):
-        try:
-            if runner is None:
-                make_notebook_runner_thread.join()
+        # This is an ugly little bit to deal with a sporadic
+        #  'queue empty' bug in iPython that only seems to
+        #  happen on the integration servers...
+        #  see https://github.com/paulgb/runipy/issues/36
+        N_RUN_RETRIES = 4
+        from Queue import Empty
 
-            # Do as complete of a reset of the kernel as we can.
-            # Unfortunately, this doesn't really do a 'hard' reset
-            # of any modules...
-            class ResetCell(dict):
-                """Simulates just enough of a notebook cell to get this
-                'reset cell' executed using the existing runipy
-                 machinery."""
-                input = "get_ipython().reset(new_session=True)"
-            runner.run_cell(ResetCell())
-            runner.nb = nb['content']
-            print "Running notebook"
-            runner.run_notebook(skip_exceptions=True)
-            break
-        except Empty as e:
-            print "WARNING: Empty bug happened."
-            if i >= (N_RUN_RETRIES - 1):
-                raise
+        for i in range(N_RUN_RETRIES):
+            try:
+                if runner is None:
+                    make_notebook_runner_thread.join()
 
+                # Do as complete of a reset of the kernel as we can.
+                # Unfortunately, this doesn't really do a 'hard' reset
+                # of any modules...
+                class ResetCell(dict):
+                    """Simulates just enough of a notebook cell to get this
+                    'reset cell' executed using the existing runipy
+                     machinery."""
+                    input = "get_ipython().reset(new_session=True)"
+                runner.run_cell(ResetCell())
+                runner.nb = nb['content']
+                print "Running notebook"
+                runner.run_notebook(skip_exceptions=True)
+                break
+            except Empty as e:
+                print "WARNING: Empty bug happened."
+                if i >= (N_RUN_RETRIES - 1):
+                    raise
+        nb = runner.nb
+    else:
+        nb = nb['content']
     print "Exporting notebook"
     exporter = NBExporter(template_file=config['template'])
-
-    output, resources = exporter.from_notebook_node(runner.nb)
+    output, resources = exporter.from_notebook_node(nb)
     print "Returning."
     return output
 
