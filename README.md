@@ -31,20 +31,25 @@ As nbserve matures, I hope to add features like:
    ```
    $ nbserve -h
 
-       usage: nbserve [-h] [-v] [-p PORT] [--no-debug] [working_directory]
+     usage: nbserve [-h] [-v] [-t {strip-input,collapse-input,full}] [-p PORT] [-r]
+                    [-d]
+                    [working_directory]
 
-       nbserve is a simple script that lets you serve iPython notebooks as read-only
-       HTML files over the web. It has some default options that make the notebooks
-       appropriate for generating reports, such as hiding input cells.
+     nbserve is a simple script that lets you serve iPython notebooks as read-only
+     HTML files over the web. It has some default options that make the notebooks
+     appropriate for generating reports, such as hiding input cells.
 
-       positional arguments:
-         working_directory
+     positional arguments:
+       working_directory
 
-       optional arguments:
-         -h, --help         show this help message and exit
-         -v, --version      show program's version number and exit
-         -p PORT
-         --no-debug
+     optional arguments:
+       -h, --help            show this help message and exit
+       -v, --version         show program's version number and exit
+       -t {strip-input,collapse-input,full}
+                             Whether to strip, collapse, or show input code cells.
+       -p PORT
+       -r                    Whether to run scripts each time they're loaded.
+       -d                    Debug mode
 
    $ nbserve
 
@@ -87,7 +92,9 @@ As nbserve matures, I hope to add features like:
     any other flask app.
 
 ## Development
+
 ### Releasing
+
 ```sh
 # python setup.py register -r pypi
 python setup.py sdist upload -r pypi
