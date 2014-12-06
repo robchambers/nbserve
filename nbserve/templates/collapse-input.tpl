@@ -19,6 +19,12 @@ div.output_wrapper {
   display: none;
   margin-top: 5px;
 }
+
+div.output_wrapper:hover {
+    border: 1px solid rgba(200,200,200);
+    border-radius: 4px;
+    background: rgba(240,240,240,0.85);
+}
 </style>
 
 <script>
