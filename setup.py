@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import glob
 
 # Get  __version__
 exec(open('nbserve/meta.py').read())
@@ -18,6 +19,7 @@ setup(
     url=__url__,
     keywords=__keywords__,
     packages=find_packages(exclude=['tests*']),
+    data_files=[('nbserve/templates', glob.glob('nbserve/templates/*.tpl'))],
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,
