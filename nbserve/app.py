@@ -7,7 +7,7 @@ flask_app = flask.Flask(nbserve.__progname__)
 
 #############
 # Initialize some Jupyter and RunIPy services.
-from Jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
+from jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
 nbmanager = FileNotebookManager(notebook_dir='.')
 ##
 # This thread initializes a notebook runner, so that it's
@@ -69,7 +69,7 @@ def render_page(nbname, config={}):
     config = dict(flask_app.base_config, **config)
 
     global runner
-    #from Jupyter.nbconvert.exporters.html import HTMLExporter
+    #from jupyter.nbconvert.exporters.html import HTMLExporter
     from nbexporter import NBExporter
 
     if not nbmanager.notebook_exists(nbname):
