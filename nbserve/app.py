@@ -2,6 +2,7 @@ import flask
 import nbserve
 import os
 from glob import glob
+from nbformat import reads
 
 flask_app = flask.Flask(nbserve.__progname__)
 #flask_app.config['DEBUG'] = True
@@ -26,7 +27,7 @@ except ImportError:
         def get_notebook(self, nbname):
             with open(os.path.join(self.notebook_dir, nbname), 'r') as f:
                 nb = f.read()
-                return nb
+                return reads(nb, 3)
 
 
     nbmanager = MockNotebookManager()
@@ -35,14 +36,21 @@ except ImportError:
 # This thread initializes a notebook runner, so that it's
 # ready to go on first page access.
 runner = None
-import threading
-def make_notebook_runner():
-    global runner
-    from runipy.notebook_runner import NotebookRunner
-    runner = NotebookRunner(None)
-    print "Runner is ready."
-make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
-make_notebook_runner_thread.start()
+# import threading
+# def make_notebook_runner():
+#     global runner
+#     from runipy.notebook_runner import NotebookRunner
+#     runner = NotebookRunner(None)
+#     print "Runner is ready."
+# make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
+# make_notebook_runner_thread.start()
+
+# from runipy.notebook_runner import NotebookRunner
+import jupyter_client
+import runipy.notebook_runner
+# runner = NotebookRunner(None)
+runner = runipy.notebook_runner.NotebookRunner(None)
+
 
 def update_config(new_config):
     """ Update config options with the provided dictionary of options.
@@ -124,9 +132,9 @@ def render_page(nbname, config={}):
                     """Simulates just enough of a notebook cell to get this
                     'reset cell' executed using the existing runipy
                      machinery."""
-                    input = "get_jupyter().reset(new_session=True)"
+                    input = "get_ipython().reset(new_session=True)"
                 runner.run_cell(ResetCell())
-                runner.nb = nb['content']
+                runner.nb = nb
                 print "Running notebook"
                 runner.run_notebook(skip_exceptions=True)
                 break
