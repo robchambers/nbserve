@@ -2,13 +2,16 @@ import flask
 import nbserve
 import os
 from glob import glob
-from nbformat import reads
+import jupyter_client
 
 flask_app = flask.Flask(nbserve.__progname__)
 #flask_app.config['DEBUG'] = True
 
 #############
 # Initialize some Jupyter and RunIPy services.
+from traitlets.config import Config
+from nbconvert.exporters.html import HTMLExporter
+from nbformat import convert, current_nbformat, reads # write, NBFormatError
 
 try:
     from jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
@@ -49,7 +52,7 @@ runner = None
 import jupyter_client
 import runipy.notebook_runner
 # runner = NotebookRunner(None)
-runner = runipy.notebook_runner.NotebookRunner(None)
+# runner = runipy.notebook_runner.NotebookRunner(None)
 
 
 def update_config(new_config):
@@ -143,11 +146,26 @@ def render_page(nbname, config={}):
                 if i >= (N_RUN_RETRIES - 1):
                     raise
         nb = runner.nb
-    else:
-        nb = nb['content']
+    # else:
+    #     nb = nb['content']
     print "Exporting notebook"
-    exporter = NBExporter(template_file=config['template'])
-    output, resources = exporter.from_notebook_node(nb)
+    # print nb
+    # exporter = NBExporter(template_file=config['template'])
+    # output, resources = exporter.from_notebook_node(nb)
+    # if args.template is False:
+    #     exporter = HTMLExporter()
+    # else:
+    exporter = HTMLExporter(
+        config=Config({
+            'HTMLExporter': {
+                'template_file': config['template'],
+                'template_path': ['.', os.path.join(os.path.split(__file__)[0], 'templates')]
+            }
+        })
+    )
+    output, resources = exporter.from_notebook_node(
+        convert(nb, current_nbformat)
+    )
     print "Returning."
     return output
 
