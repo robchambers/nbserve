@@ -1,5 +1,5 @@
 __progname__ = "nbserve"
-__version__ = '0.3.1'
+__version__ = '0.4.1'
 __description__ = """nbserve is a simple script that lets you serve
 jupyter notebooks as read-only HTML files over the web. It has some
 default options that make the notebooks appropriate for generating
