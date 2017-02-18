@@ -1,14 +1,27 @@
 import flask
 import nbserve
 import os
+from glob import glob
 
 flask_app = flask.Flask(nbserve.__progname__)
 #flask_app.config['DEBUG'] = True
 
 #############
 # Initialize some Jupyter and RunIPy services.
-from jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
-nbmanager = FileNotebookManager(notebook_dir='.')
+
+try:
+    from jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
+    nbmanager = FileNotebookManager(notebook_dir='.')
+except ImportError:
+    class MockNotebookManager:
+        def __init__(self):
+            self.notebook_dir = os.path.abspath('.')
+
+        def list_notebooks(self, path=''):
+            return [{'name':os.path.split(p)[-1]} for p in glob(os.path.join(self.notebook_dir, path, '*.ipynb'))]
+
+    nbmanager = MockNotebookManager()
+
 ##
 # This thread initializes a notebook runner, so that it's
 # ready to go on first page access.
