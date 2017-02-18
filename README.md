@@ -1,7 +1,11 @@
 # nbserve
 
+**Updated as of Feb 18, 2017 to work with the latest Jupyter version.** This project has
+been dormant for a couple of years, but as of now it's working again. If you would find
+it useful, please tell me, and I'll try to give it some TLC.
+
 `nbserve` is a simple script that lets you serve
-jupyter notebooks as read-only HTML files over the web.
+iPython notebooks as read-only HTML files over the web.
 
 One of the key differences between nbserve and other options
 (like nbviewer) is that it lets you *run* the files as
@@ -35,7 +39,7 @@ As nbserve matures, I hope to add features like:
                     [-d]
                     [working_directory]
 
-     nbserve is a simple script that lets you serve jupyter notebooks as read-only
+     nbserve is a simple script that lets you serve iPython notebooks as read-only
      HTML files over the web. It has some default options that make the notebooks
      appropriate for generating reports, such as hiding input cells.
 
@@ -62,7 +66,7 @@ As nbserve matures, I hope to add features like:
 
 ## Target Use Cases
 
-* A user has run analyses in jupyter Notebook and wants to easily make the
+* A user has run analyses in iPython Notebook and wants to easily make the
   results available on the web. The results are already contained
   in the notebook
 
@@ -74,7 +78,7 @@ As nbserve matures, I hope to add features like:
 
 ## Links / Inspiration
 
-* https://github.com/joerns/jupyter-notebook-tools
+* https://github.com/joerns/ipython-notebook-tools  
 * https://github.com/paulgb/runipy
 * http://www.plankandwhittle.com/packaging-a-flask-web-app/
 
