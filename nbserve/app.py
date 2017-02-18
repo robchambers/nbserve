@@ -20,6 +20,9 @@ except ImportError:
         def list_notebooks(self, path=''):
             return [{'name':os.path.split(p)[-1]} for p in glob(os.path.join(self.notebook_dir, path, '*.ipynb'))]
 
+        def notebook_exists(self, nbname):
+            return os.path.exists(os.path.join(self.notebook_dir, nbname))
+
     nbmanager = MockNotebookManager()
 
 ##
