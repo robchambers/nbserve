@@ -17,6 +17,8 @@ try:
     from jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
     nbmanager = FileNotebookManager(notebook_dir='.')
 except ImportError:
+    # 'Notebook Manager' doesn't seem to exist in newer versions of IPython / Jupyter, so
+    #   I reimplemented the functionality we need here (rather than change a bunch of the existing code).
     class MockNotebookManager:
         def __init__(self):
             self.notebook_dir = os.path.abspath('.')
@@ -39,20 +41,22 @@ except ImportError:
 # This thread initializes a notebook runner, so that it's
 # ready to go on first page access.
 runner = None
-# import threading
-# def make_notebook_runner():
-#     global runner
-#     from runipy.notebook_runner import NotebookRunner
-#     runner = NotebookRunner(None)
-#     print "Runner is ready."
-# make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
-# make_notebook_runner_thread.start()
-
-# from runipy.notebook_runner import NotebookRunner
+import threading
 import jupyter_client
 import runipy.notebook_runner
-# runner = NotebookRunner(None)
-# runner = runipy.notebook_runner.NotebookRunner(None)
+
+def make_notebook_runner():
+    global runner
+    from runipy.notebook_runner import NotebookRunner
+    runner = NotebookRunner(None)
+    print "Runner is ready."
+make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
+make_notebook_runner_thread.start()
+
+from runipy.notebook_runner import NotebookRunner
+
+runner = NotebookRunner(None)
+runner = runipy.notebook_runner.NotebookRunner(None)
 
 
 def update_config(new_config):
@@ -102,8 +106,6 @@ def render_page(nbname, config={}):
     config = dict(flask_app.base_config, **config)
 
     global runner
-    #from jupyter.nbconvert.exporters.html import HTMLExporter
-    from nbexporter import NBExporter
 
     if not nbmanager.notebook_exists(nbname):
         print "Notebook %s does not exist." % nbname
@@ -149,12 +151,6 @@ def render_page(nbname, config={}):
     # else:
     #     nb = nb['content']
     print "Exporting notebook"
-    # print nb
-    # exporter = NBExporter(template_file=config['template'])
-    # output, resources = exporter.from_notebook_node(nb)
-    # if args.template is False:
-    #     exporter = HTMLExporter()
-    # else:
     exporter = HTMLExporter(
         config=Config({
             'HTMLExporter': {

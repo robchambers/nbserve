@@ -55,6 +55,8 @@ class NBServeTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('<li>And, this is a markdown list item.</li>', response.data)
 
+    # Removed these tests because the notebooks were in an old IPython version and were
+    #  fragile.
     # def test_reset(self):
     #     """ Does %reset -f work as expected?
     #     """
@@ -96,8 +98,8 @@ class NBServeTestCase(unittest.TestCase):
     def setUp(self):
         nbserve.set_config({
             'working_directory':os.path.join(os.path.split(__file__)[0],'notebooks/'),
-            # 'run':True
-            'run':False
+            'run':True
+            #'run':False
 
         })
         self.app = nbserve.flask_app.test_client()
