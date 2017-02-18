@@ -6,7 +6,7 @@ exec(open('nbserve/meta.py').read())
 
 requires = ['flask',
             'runipy',
-            'ipython',
+            'jupyter',
             'tornado',
             'jinja2',
             'pyzmq']

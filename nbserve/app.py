@@ -6,8 +6,8 @@ flask_app = flask.Flask(nbserve.__progname__)
 #flask_app.config['DEBUG'] = True
 
 #############
-# Initialize some IPython and RunIPy services.
-from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
+# Initialize some Jupyter and RunIPy services.
+from Jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
 nbmanager = FileNotebookManager(notebook_dir='.')
 ##
 # This thread initializes a notebook runner, so that it's
@@ -69,7 +69,7 @@ def render_page(nbname, config={}):
     config = dict(flask_app.base_config, **config)
 
     global runner
-    #from IPython.nbconvert.exporters.html import HTMLExporter
+    #from Jupyter.nbconvert.exporters.html import HTMLExporter
     from nbexporter import NBExporter
 
     if not nbmanager.notebook_exists(nbname):
@@ -84,7 +84,7 @@ def render_page(nbname, config={}):
         print "Making runner..."''
 
         # This is an ugly little bit to deal with a sporadic
-        #  'queue empty' bug in iPython that only seems to
+        #  'queue empty' bug in jupyter that only seems to
         #  happen on the integration servers...
         #  see https://github.com/paulgb/runipy/issues/36
         N_RUN_RETRIES = 4
@@ -102,7 +102,7 @@ def render_page(nbname, config={}):
                     """Simulates just enough of a notebook cell to get this
                     'reset cell' executed using the existing runipy
                      machinery."""
-                    input = "get_ipython().reset(new_session=True)"
+                    input = "get_jupyter().reset(new_session=True)"
                 runner.run_cell(ResetCell())
                 runner.nb = nb['content']
                 print "Running notebook"

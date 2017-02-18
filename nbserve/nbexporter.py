@@ -1,6 +1,6 @@
 import os.path
-from IPython.nbconvert.exporters.html import HTMLExporter
-from IPython.utils.traitlets import List
+from Jupyter.nbconvert.exporters.html import HTMLExporter
+from Jupyter.utils.traitlets import List
 
 template_dir = os.path.join(os.path.split(__file__)[0],'templates')
 
