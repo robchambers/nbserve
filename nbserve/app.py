@@ -23,6 +23,12 @@ except ImportError:
         def notebook_exists(self, nbname):
             return os.path.exists(os.path.join(self.notebook_dir, nbname))
 
+        def get_notebook(self, nbname):
+            with open(os.path.join(self.notebook_dir, nbname), 'r') as f:
+                nb = f.read()
+                return nb
+
+
     nbmanager = MockNotebookManager()
 
 ##
