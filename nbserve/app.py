@@ -1,19 +1,50 @@
 import flask
 import nbserve
 import os
+from glob import glob
+import jupyter_client
 
 flask_app = flask.Flask(nbserve.__progname__)
 #flask_app.config['DEBUG'] = True
 
 #############
-# Initialize some IPython and RunIPy services.
-from IPython.html.services.notebooks.filenbmanager import FileNotebookManager
-nbmanager = FileNotebookManager(notebook_dir='.')
+# Initialize some Jupyter and RunIPy services.
+from traitlets.config import Config
+from nbconvert.exporters.html import HTMLExporter
+from nbformat import convert, current_nbformat, reads # write, NBFormatError
+
+try:
+    from jupyter.html.services.notebooks.filenbmanager import FileNotebookManager
+    nbmanager = FileNotebookManager(notebook_dir='.')
+except ImportError:
+    # 'Notebook Manager' doesn't seem to exist in newer versions of IPython / Jupyter, so
+    #   I reimplemented the functionality we need here (rather than change a bunch of the existing code).
+    class MockNotebookManager:
+        def __init__(self):
+            self.notebook_dir = os.path.abspath('.')
+
+        def list_notebooks(self, path=''):
+            return [{'name':os.path.split(p)[-1]} for p in glob(os.path.join(self.notebook_dir, path, '*.ipynb'))]
+
+        def notebook_exists(self, nbname):
+            return os.path.exists(os.path.join(self.notebook_dir, nbname))
+
+        def get_notebook(self, nbname):
+            with open(os.path.join(self.notebook_dir, nbname), 'r') as f:
+                nb = f.read()
+                return reads(nb, 3)
+
+
+    nbmanager = MockNotebookManager()
+
 ##
 # This thread initializes a notebook runner, so that it's
 # ready to go on first page access.
 runner = None
 import threading
+import jupyter_client
+import runipy.notebook_runner
+
 def make_notebook_runner():
     global runner
     from runipy.notebook_runner import NotebookRunner
@@ -21,6 +52,12 @@ def make_notebook_runner():
     print "Runner is ready."
 make_notebook_runner_thread = threading.Thread(target=make_notebook_runner)
 make_notebook_runner_thread.start()
+
+from runipy.notebook_runner import NotebookRunner
+
+runner = NotebookRunner(None)
+runner = runipy.notebook_runner.NotebookRunner(None)
+
 
 def update_config(new_config):
     """ Update config options with the provided dictionary of options.
@@ -69,8 +106,6 @@ def render_page(nbname, config={}):
     config = dict(flask_app.base_config, **config)
 
     global runner
-    #from IPython.nbconvert.exporters.html import HTMLExporter
-    from nbexporter import NBExporter
 
     if not nbmanager.notebook_exists(nbname):
         print "Notebook %s does not exist." % nbname
@@ -84,7 +119,7 @@ def render_page(nbname, config={}):
         print "Making runner..."''
 
         # This is an ugly little bit to deal with a sporadic
-        #  'queue empty' bug in iPython that only seems to
+        #  'queue empty' bug in jupyter that only seems to
         #  happen on the integration servers...
         #  see https://github.com/paulgb/runipy/issues/36
         N_RUN_RETRIES = 4
@@ -104,7 +139,7 @@ def render_page(nbname, config={}):
                      machinery."""
                     input = "get_ipython().reset(new_session=True)"
                 runner.run_cell(ResetCell())
-                runner.nb = nb['content']
+                runner.nb = nb
                 print "Running notebook"
                 runner.run_notebook(skip_exceptions=True)
                 break
@@ -113,11 +148,20 @@ def render_page(nbname, config={}):
                 if i >= (N_RUN_RETRIES - 1):
                     raise
         nb = runner.nb
-    else:
-        nb = nb['content']
+    # else:
+    #     nb = nb['content']
     print "Exporting notebook"
-    exporter = NBExporter(template_file=config['template'])
-    output, resources = exporter.from_notebook_node(nb)
+    exporter = HTMLExporter(
+        config=Config({
+            'HTMLExporter': {
+                'template_file': config['template'],
+                'template_path': ['.', os.path.join(os.path.split(__file__)[0], 'templates')]
+            }
+        })
+    )
+    output, resources = exporter.from_notebook_node(
+        convert(nb, current_nbformat)
+    )
     print "Returning."
     return output
 

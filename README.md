@@ -1,5 +1,9 @@
 # nbserve
 
+**Updated as of Feb 18, 2017 to work with the latest Jupyter version.** This project has
+been dormant for a couple of years, but as of now it's working again. If you would find
+it useful, please tell me, and I'll try to give it some TLC.
+
 `nbserve` is a simple script that lets you serve
 iPython notebooks as read-only HTML files over the web.
 
